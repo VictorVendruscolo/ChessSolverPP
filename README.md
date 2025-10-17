@@ -2,7 +2,7 @@
 
 **Solver de Xadrez Inteligente com Interface Gráfica**
 
-Projeto desenvolvido em C++17 com SFML para a disciplina **Paradigmas da Programação - UFSC 2025**.
+Projeto desenvolvido em C++17 com SFML para a disciplina **Paradigmas da Programação - UEMS 2025**.
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
 ![C++](https://img.shields.io/badge/C++-17-blue)
