@@ -1,1 +1,20 @@
+# Visual Studio
 .vs/
+*.vcxproj*
+*.sln
+*.obj
+*.user
+
+# CMake build
+out/
+build/
+CMakeCache.txt
+CMakeFiles/
+
+# Executáveis
+bin/*.exe
+bin/*.dll
+
+# Temporários
+*.tmp
+*.log
