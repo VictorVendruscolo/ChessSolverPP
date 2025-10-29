@@ -134,3 +134,5 @@ bin\main.exe
 - 📄 **[docs/](docs/)** - Documentação completa
 - 🔗 **[SFML Docs](https://www.sfml-dev.org/documentation/2.6.0/)** - Referência SFML
 - 🐛 **[Issues](https://github.com/VictorVendruscolo/ChessSolverPP/issues)** - Bugs e melhorias
+
+- Teste de push realizado com sucesso.
