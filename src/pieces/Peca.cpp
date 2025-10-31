@@ -1,14 +1,32 @@
-#pragma once
+#include "pieces/Peca.hpp" 
+#include "core/Tabuleiro.hpp" 
 
-enum Cor { BRANCA, PRETA};
+Peca::Peca(Posicao pos, Cor cor, TipoPeca tipo)
+    : posicao(pos), cor(cor), tipo(tipo), jaMoveu(false) {
+}
 
-class tabuleiro;
+bool Posicao::operator==(const Posicao& other) const {
+    return linha == other.linha && coluna == other.coluna;
+}
 
-class peca {
-protected:
-	Cor cor;
-	int x, y;
-public: 
-	peca(Cor cor, int x, int y) {};
-	virtual ~peca() {}
-};
+Posicao Peca::getPosicao() const {
+    return this->posicao;
+}
+
+void Peca::setPosicao(Posicao novaPosicao) {
+    this->posicao = novaPosicao;
+    this->jaMoveu = true;
+}
+
+Cor Peca::getCor() const {
+    return this->cor;
+}
+
+TipoPeca Peca::getTipo() const {
+    return this->tipo;
+}
+
+bool Peca::getJaMoveu() const {
+    return this->jaMoveu;
+}
+
