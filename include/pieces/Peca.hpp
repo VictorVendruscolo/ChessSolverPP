@@ -1,11 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include <vector>
+#include <memory>
 
-// Forward declaration para evitar inclusões circulares com Tabuleiro.hpp
 class MTabuleiro;
 
-// Enumerações e Estruturas que fazem parte da interface pública da Peça.
 enum class Cor {
     BRANCA,
     PRETA,
@@ -14,18 +13,16 @@ enum class Cor {
 
 enum class TipoPeca {
     REI,
-    DAMA,
+    RAINHA,
     TORRE,
     BISPO,
     CAVALO,
-    PEAO,
-    NENHUMA
+    PEAO
 };
 
 struct Posicao {
     int linha;
     int coluna;
-
     bool operator==(const Posicao& other) const;
 };
 
@@ -34,13 +31,17 @@ protected:
     Posicao posicao;
     Cor cor;
     TipoPeca tipo;
+    char simbolo;
     bool jaMoveu;
 
 public:
-
-    Peca(Posicao pos, Cor cor, TipoPeca tipo);
-
+    Peca(Posicao pos, Cor cor, TipoPeca tipo, char simbolo);
     virtual ~Peca() = default;
+
+    // ============================================
+    // ADICIONA ESTE MÃ‰TODO VIRTUAL PURO!
+    // ============================================
+    virtual std::unique_ptr<Peca> clone() const = 0;
 
     virtual std::vector<Posicao> getMovimentosPossiveis(const MTabuleiro& tabuleiro) const = 0;
 
@@ -48,5 +49,6 @@ public:
     void setPosicao(Posicao novaPosicao);
     Cor getCor() const;
     TipoPeca getTipo() const;
+    char getSimbolo() const;
     bool getJaMoveu() const;
 };

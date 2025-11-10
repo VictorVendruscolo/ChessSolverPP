@@ -1,68 +1,78 @@
-#include "core/Tabuleiro.hpp" 
+﻿#include "core/Tabuleiro.hpp"
 #include "pieces/Rei.hpp"
+#include "pieces/Rainha.hpp"
+#include "pieces/Torre.hpp"
+#include "pieces/Bispo.hpp"
+#include "pieces/Cavalo.hpp"
+#include "pieces/Peao.hpp"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 
-MTabuleiro::MTabuleiro() {
-    grade.resize(8);
-    for (int i = 0; i < 8; ++i) {
-        grade[i].resize(8, nullptr);
+MTabuleiro::MTabuleiro(int linhas, int colunas) : linhas(linhas), colunas(colunas) {
+    grade.resize(linhas);
+    buracos.resize(linhas);
+    for (int i = 0; i < linhas; ++i) {
+        grade[i].resize(colunas);
+        buracos[i].resize(colunas, false);
     }
 }
 
-void MTabuleiro::carregarDeArquivo(const std::string& caminhoDoArquivo) {
-    std::ifstream arquivo(caminhoDoArquivo);
-    if (!arquivo.is_open()) {
-        throw std::runtime_error("Nao foi possivel abrir o arquivo de teste: " + caminhoDoArquivo);
+void MTabuleiro::adicionarBuraco(const Posicao& pos) {
+    if (pos.linha >= 0 && pos.linha < linhas &&
+        pos.coluna >= 0 && pos.coluna < colunas) {
+        grade[pos.linha][pos.coluna].reset(); // remove peça caso existisse
+        buracos[pos.linha][pos.coluna] = true; // marca buraco
     }
+}
 
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            grade[i][j].reset();
-        }
+
+void MTabuleiro::adicionarPeca(Peca* peca) {
+    if (!peca) return;
+    Posicao pos = peca->getPosicao();
+    if (pos.linha >= 0 && pos.linha < linhas &&
+        pos.coluna >= 0 && pos.coluna < colunas) {
+        grade[pos.linha][pos.coluna].reset(peca); // Responsável pelo gerenciamento da peça
     }
-
-    char tipoChar;
-    int linha, coluna;
-
-    while (arquivo >> tipoChar >> linha >> coluna) {
-        Posicao pos = { linha, coluna };
-        Cor cor = isupper(tipoChar) ? Cor::BRANCA : Cor::PRETA;
-
-        if (cor == Cor::PRETA && tolower(tipoChar) != 'k') {
-            continue;
-        }
-
-        switch (tolower(tipoChar)) {
-        case 'k': // Rei
-            grade[linha][coluna] = std::make_unique<Rei>(pos, cor);
-            break;
-        default:
-            break;
-        }
+    else {
+        throw std::runtime_error("Posicao fora dos limites ao adicionar peça");
     }
 }
 
 Peca* MTabuleiro::getPecaEm(Posicao pos) const {
-    if (pos.linha < 0 || pos.linha >= 8 || pos.coluna < 0 || pos.coluna >= 8) {
+    if (pos.linha < 0 || pos.linha >= linhas || pos.coluna < 0 || pos.coluna >= colunas)
         return nullptr;
-    }
+    if (buracos[pos.linha][pos.coluna])
+        return nullptr; // casa buraco não contém peça
     return grade[pos.linha][pos.coluna].get();
 }
+
 
 bool MTabuleiro::isPosicaoAtacada(Posicao pos, Cor corDaPecaAtacada) const {
     Cor corAtacante = (corDaPecaAtacada == Cor::BRANCA) ? Cor::PRETA : Cor::BRANCA;
 
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
+    for (int i = 0; i < linhas; ++i) {
+        for (int j = 0; j < colunas; ++j) {
             Peca* peca = getPecaEm({ i, j });
-
             if (peca != nullptr && peca->getCor() == corAtacante) {
-                std::vector<Posicao> movimentos = peca->getMovimentosPossiveis(*this);
-                for (const auto& movimento : movimentos) {
-                    if (movimento == pos) {
-                        return true;
+
+                // Tratamento especial para REI (não chama getMovimentosPossiveis para evitar recursão)
+                if (peca->getTipo() == TipoPeca::REI) {
+                    // Verifica se está a 1 casa de distância (ataque do rei)
+                    int distLinha = abs(peca->getPosicao().linha - pos.linha);
+                    int distColuna = abs(peca->getPosicao().coluna - pos.coluna);
+
+                    if (distLinha <= 1 && distColuna <= 1 && (distLinha + distColuna) > 0) {
+                        return true;  // Está no alcance do rei
+                    }
+                }
+                else {
+                    // Para outras peças, usa getMovimentosPossiveis normalmente
+                    std::vector<Posicao> movimentos = peca->getMovimentosPossiveis(*this);
+                    for (const auto& movimento : movimentos) {
+                        if (movimento == pos) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -71,38 +81,131 @@ bool MTabuleiro::isPosicaoAtacada(Posicao pos, Cor corDaPecaAtacada) const {
     return false;
 }
 
+
+bool MTabuleiro::isBuraco(Posicao pos) const {
+    if (pos.linha < 0 || pos.linha >= linhas ||
+        pos.coluna < 0 || pos.coluna >= colunas) {
+        return false;
+    }
+    return buracos[pos.linha][pos.coluna];
+}
+
+
 void MTabuleiro::moverPeca(Posicao inicio, Posicao fim) {
+    // ADICIONE ESTAS LINHAS:
+    if (inicio.linha < 0 || inicio.linha >= linhas || inicio.coluna < 0 || inicio.coluna >= colunas) return;
+    if (fim.linha < 0 || fim.linha >= linhas || fim.coluna < 0 || fim.coluna >= colunas) return;
+
+    // Resto do código original
     if (getPecaEm(inicio) != nullptr) {
         grade[fim.linha][fim.coluna] = std::move(grade[inicio.linha][inicio.coluna]);
-        if (getPecaEm(fim) != nullptr) {
-            getPecaEm(fim)->setPosicao(fim);
+        Peca* p = getPecaEm(fim);
+        if (p != nullptr) {
+            p->setPosicao(fim);
         }
     }
 }
 
 void MTabuleiro::exibir() const {
-    std::cout << "  -----------------" << std::endl;
-    for (int i = 0; i < 8; ++i) {
-        std::cout << i << " | ";
-        for (int j = 0; j < 8; ++j) {
-            Peca* p = getPecaEm({ i, j });
-            if (p == nullptr) {
-                std::cout << ". ";
+    // Linha superior com letras das colunas
+    std::cout << "   ";
+    for (int j = 0; j < colunas; ++j) {
+        std::cout << " " << (char)('a' + j);
+    }
+    std::cout << std::endl;
+
+    std::cout << "  +";
+    for (int j = 0; j < colunas; ++j) {
+        std::cout << "--";
+    }
+    std::cout << "+" << std::endl;
+
+    // Exibe de cima para baixo
+    for (int i = linhas - 1; i >= 0; --i) {
+        std::cout << (i + 1) << " |";
+
+        for (int j = 0; j < colunas; ++j) {
+            if (buracos[i][j]) {
+                std::cout << " #";
             }
             else {
-                char c = ' ';
-                switch (p->getTipo()) {
-                case TipoPeca::REI: c = 'k'; break;
-                default: c = '?'; break;
+                Peca* p = getPecaEm({ i, j });
+                if (p == nullptr) {
+                    std::cout << " .";
                 }
-                if (p->getCor() == Cor::BRANCA) {
-                    c = toupper(c);
+                else {
+                    // USA getSimbolo() EM VEZ DE getTipo()!
+                    char c = p->getSimbolo();
+
+                    if (p->getCor() == Cor::PRETA) {
+                        c = tolower(c);
+                    }
+                    std::cout << " " << c;
                 }
-                std::cout << c << " ";
             }
         }
-        std::cout << "|" << std::endl;
+        std::cout << " |" << std::endl;
     }
-    std::cout << "  -----------------" << std::endl;
-    std::cout << "    0 1 2 3 4 5 6 7" << std::endl;
+
+    std::cout << "  +";
+    for (int j = 0; j < colunas; ++j) {
+        std::cout << "--";
+    }
+    std::cout << "+" << std::endl;
+
+    // Linha inferior com letras das colunas
+    std::cout << "   ";
+    for (int j = 0; j < colunas; ++j) {
+        std::cout << " " << (char)('a' + j);
+    }
+    std::cout << std::endl;
 }
+
+
+
+
+MTabuleiro::MTabuleiro(const MTabuleiro& outro) : linhas(outro.linhas), colunas(outro.colunas) {
+    grade.resize(linhas);
+    buracos.resize(linhas);
+
+    for (int i = 0; i < linhas; ++i) {
+        grade[i].resize(colunas);
+        buracos[i] = outro.buracos[i];
+
+        for (int j = 0; j < colunas; ++j) {
+            Peca* peca = outro.getPecaEm({ i, j });
+            if (peca) {
+                grade[i][j] = peca->clone();  // UMA LINHA! Mágica do polimorfismo!
+            }
+        }
+    }
+}
+
+
+MTabuleiro& MTabuleiro::operator=(const MTabuleiro& outro) {
+    if (this != &outro) {
+        linhas = outro.linhas;
+        colunas = outro.colunas;
+        grade.clear();
+        buracos.clear();
+
+        grade.resize(linhas);
+        buracos.resize(linhas);
+
+        for (int i = 0; i < linhas; ++i) {
+            grade[i].resize(colunas);
+            buracos[i] = outro.buracos[i];
+
+            for (int j = 0; j < colunas; ++j) {
+                Peca* peca = outro.getPecaEm({ i, j });
+                if (peca) {
+                    grade[i][j] = peca->clone();  // UMA LINHA!
+                }
+            }
+        }
+    }
+    return *this;
+}
+
+
+

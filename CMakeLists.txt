@@ -13,12 +13,20 @@ include_directories(${CMAKE_SOURCE_DIR}/lib/SFML/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib/SFML/lib)
 
 # Criar executável
-add_executable(ChessSolverPP 
-src/main.cpp
-src/core/Tabuleiro.cpp
-src/pieces/Peca.cpp
-src/pieces/Rei.cpp
-)
+add_executable(ChessSolverPP
+    src/main.cpp
+    src/pieces/Peca.cpp
+    src/pieces/Rei.cpp
+    src/pieces/Rainha.cpp
+    src/pieces/Torre.cpp
+    src/pieces/Bispo.cpp
+    src/pieces/Cavalo.cpp
+    src/pieces/Peao.cpp
+    src/core/Tabuleiro.cpp
+    src/core/Parser.cpp          
+    src/core/Solver.cpp
+ "src/pieces/Pulga.cpp")
+
 
 # Linkar bibliotecas SFML
 target_link_libraries(ChessSolverPP 

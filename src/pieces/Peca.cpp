@@ -1,32 +1,34 @@
-#include "pieces/Peca.hpp" 
-#include "core/Tabuleiro.hpp" 
+﻿#include "pieces/Peca.hpp"
 
-Peca::Peca(Posicao pos, Cor cor, TipoPeca tipo)
-    : posicao(pos), cor(cor), tipo(tipo), jaMoveu(false) {
+Peca::Peca(Posicao pos, Cor cor, TipoPeca tipo, char simbolo)
+    : posicao(pos), cor(cor), tipo(tipo), simbolo(simbolo), jaMoveu(false) {
 }
 
 bool Posicao::operator==(const Posicao& other) const {
-    return linha == other.linha && coluna == other.coluna;
+    return this->linha == other.linha && this->coluna == other.coluna;
 }
 
 Posicao Peca::getPosicao() const {
-    return this->posicao;
+    return posicao;
 }
 
 void Peca::setPosicao(Posicao novaPosicao) {
-    this->posicao = novaPosicao;
-    this->jaMoveu = true;
+    posicao = novaPosicao;
+    jaMoveu = true;
 }
 
 Cor Peca::getCor() const {
-    return this->cor;
+    return cor;
 }
 
 TipoPeca Peca::getTipo() const {
-    return this->tipo;
+    return tipo;
+}
+
+char Peca::getSimbolo() const {
+    return simbolo;
 }
 
 bool Peca::getJaMoveu() const {
-    return this->jaMoveu;
+    return jaMoveu;
 }
-
