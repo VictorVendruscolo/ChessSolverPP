@@ -32,7 +32,7 @@ private:
 
 public:
     ChessSolver(const MTabuleiro& tab, int profundidade);
-
+    const std::vector<Movimento>& getSolucao() const { return solucao; }
     bool resolver();
     void salvarSolucao(const std::string& arquivo) const;
     void exibirSolucao() const;

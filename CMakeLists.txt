@@ -25,14 +25,23 @@ add_executable(ChessSolverPP
     src/core/Tabuleiro.cpp
     src/core/Parser.cpp          
     src/core/Solver.cpp
- "src/pieces/Pulga.cpp")
+    
+    src/graphics/GraphicsEngine.cpp
+    src/graphics/AnimationManager.cpp
+    src/graphics/MenuInterface.cpp
+ "src/pieces/Pulga.cpp" "src/graphics/GraphicsEngine.cpp")
 
 
 # Linkar bibliotecas SFML
-target_link_libraries(ChessSolverPP 
-    sfml-graphics 
-    sfml-window 
-    sfml-system
+target_link_libraries(ChessSolverPP
+    debug sfml-graphics-d
+    debug sfml-window-d
+    debug sfml-system-d
+    debug sfml-audio-d
+    optimized sfml-graphics
+    optimized sfml-window
+    optimized sfml-system
+    optimized sfml-audio
 )
 
 # Copiar DLLs automaticamente (Windows)
