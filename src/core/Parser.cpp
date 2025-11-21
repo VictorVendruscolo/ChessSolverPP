@@ -1,5 +1,5 @@
 #include "core/Parser.hpp"
-#include "core/PecaRegistry.hpp"  // <- ADICIONA
+#include "core/PecaRegistry.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -63,11 +63,11 @@ MTabuleiro Parser::carregarArquivo(const std::string& nomeArquivo, int& profundi
 
         Cor cor = std::isupper(tipoCor) ? Cor::BRANCA : Cor::PRETA;
 
-        // USA REGISTRY!
+        // USA REGISTRY
         Peca* peca = PecaRegistry::getInstance().criar(tipoCor, { linhaPos, coluna }, cor);
 
         // DEBUG
-        std::cout << "DEBUG: Tentando criar peca com simbolo '" << tipoCor << "'" << std::endl;
+        //std::cout << "DEBUG: Tentando criar peca com simbolo '" << tipoCor << "'" << std::endl;
 
         if (!peca) {
             std::cerr << "ERRO: Tipo de peca nao registrado: " << tipoCor << std::endl;
@@ -75,7 +75,7 @@ MTabuleiro Parser::carregarArquivo(const std::string& nomeArquivo, int& profundi
         }
 
         // DEBUG
-        std::cout << "DEBUG: Peca criada com sucesso! Simbolo real: " << peca->getSimbolo() << std::endl;
+        //std::cout << "DEBUG: Peca criada com sucesso! Simbolo real: " << peca->getSimbolo() << std::endl;
 
 
         if (primeiroRei) {
