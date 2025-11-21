@@ -38,9 +38,7 @@ public:
     Peca(Posicao pos, Cor cor, TipoPeca tipo, char simbolo);
     virtual ~Peca() = default;
 
-    // ============================================
-    // ADICIONA ESTE MÉTODO VIRTUAL PURO!
-    // ============================================
+ 
     virtual std::unique_ptr<Peca> clone() const = 0;
 
     virtual std::vector<Posicao> getMovimentosPossiveis(const MTabuleiro& tabuleiro) const = 0;
