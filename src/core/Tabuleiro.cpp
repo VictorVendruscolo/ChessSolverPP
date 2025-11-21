@@ -92,11 +92,11 @@ bool MTabuleiro::isBuraco(Posicao pos) const {
 
 
 void MTabuleiro::moverPeca(Posicao inicio, Posicao fim) {
-    // ADICIONE ESTAS LINHAS:
+    
     if (inicio.linha < 0 || inicio.linha >= linhas || inicio.coluna < 0 || inicio.coluna >= colunas) return;
     if (fim.linha < 0 || fim.linha >= linhas || fim.coluna < 0 || fim.coluna >= colunas) return;
 
-    // Resto do código original
+    
     if (getPecaEm(inicio) != nullptr) {
         grade[fim.linha][fim.coluna] = std::move(grade[inicio.linha][inicio.coluna]);
         Peca* p = getPecaEm(fim);
@@ -175,7 +175,7 @@ MTabuleiro::MTabuleiro(const MTabuleiro& outro) : linhas(outro.linhas), colunas(
         for (int j = 0; j < colunas; ++j) {
             Peca* peca = outro.getPecaEm({ i, j });
             if (peca) {
-                grade[i][j] = peca->clone();  // UMA LINHA! Mágica do polimorfismo!
+                grade[i][j] = peca->clone();  // Polimorfismo vibes
             }
         }
     }
@@ -199,7 +199,7 @@ MTabuleiro& MTabuleiro::operator=(const MTabuleiro& outro) {
             for (int j = 0; j < colunas; ++j) {
                 Peca* peca = outro.getPecaEm({ i, j });
                 if (peca) {
-                    grade[i][j] = peca->clone();  // UMA LINHA!
+                    grade[i][j] = peca->clone();  // Polimorfismo vibes pt.2
                 }
             }
         }
